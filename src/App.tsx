@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { auth } from './configs/firebase/config';
 
 function App() {
-  const [isAuth, setIsAuth] = useState(false);
-  const [profile, setProfile] = useState({});
+  const [isAuth, setIsAuth] = useState('No');
+  const [profile, setProfile] = useState({uid: '', email: '', name: ''});
 
   const handleAuthentication = async () => {
     console.log("Authenticating user")
@@ -18,9 +18,15 @@ function App() {
 
       console.log('USER ', user);
 
+      const userData = {
+        uid: user.providerData[0].uid ?? '', 
+        email: user.providerData[0].email ?? '', 
+        name: user.providerData[0].displayName ?? ''
+      };
+
       // Set to state
-      setIsAuth(true);
-      setProfile(user.providerData[0]);
+      setIsAuth('Yes');
+      setProfile(userData);
     } catch (err) {
       console.error(err);
     }
@@ -38,8 +44,12 @@ function App() {
           Click to Login
         </button>
         <h2>Profile Data</h2>
-        <pre></pre>
-        <p>Is Auth: {isAuth}</p>
+        <ul>
+          <li>Id: {profile.uid}</li>
+          <li>Name: {profile.name}</li>
+          <li>Email: {profile.email}</li>
+        </ul>        
+        <p>Is Authenticated: {isAuth}</p>
       </div>
     </div>
   );
