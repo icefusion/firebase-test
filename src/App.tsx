@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import './App.css'
+import { useEffect, useState } from 'react';
+import { auth } from './configs/firebase/config';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isAuth, setIsAuth] = useState(false);
+  const [profile, setProfile] = useState({});
+
+  const handleAuthentication = async () => {
+    console.log("Authenticating user")
+
+    const provider = new GoogleAuthProvider();
+
+    try {
+      const result = await signInWithPopup(auth, provider)
+      const user = result.user;
+
+      console.log('USER ', user);
+
+      // Set to state
+      setIsAuth(true);
+      setProfile(user.providerData[0]);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  useEffect(() => {
+    console.log('Profile: ', profile);
+  }, [profile])
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <div>
+      <h1>Test Login using Firebase</h1>
+      <div className="profile">
+        <button onClick={handleAuthentication}>
+          Click to Login
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <h2>Profile Data</h2>
+        <pre></pre>
+        <p>Is Auth: {isAuth}</p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
 export default App
